@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escuelas Secundarias · Supervisión Nº16 · San Rafael y Malargüe</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+<style>
+  :root{
+    --paper:#F1ECDE;
+    --card:#FBF8EF;
+    --ink:#232A25;
+    --ink-soft:#5B6459;
+    --blackboard:#1E3730;
+    --brick:#A63D2F;
+    --ochre:#C98A2E;
+    --teal:#3E6259;
+    --line: rgba(35,42,37,0.16);
+    --line-strong: rgba(35,42,37,0.3);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* subtle paper texture */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    pointer-events:none;
+    background-image:
+      radial-gradient(rgba(35,42,37,0.05) 1px, transparent 1px);
+    background-size: 3px 3px;
+    opacity:.5;
+    z-index:0;
+  }
+
+  a{color:inherit;}
+
+  header.site{
+    position:relative;
+    z-index:1;
+    background:var(--blackboard);
+    color:var(--paper);
+    padding:2.4rem 1.75rem 1.6rem;
+    border-bottom:6px solid var(--brick);
+  }
+  .header-inner{
+    max-width:1200px;
+    margin:0 auto;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.72rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:#CFD9C9;
+    display:flex;
+    align-items:center;
+    gap:.6rem;
+  }
+  .eyebrow::before{
+    content:"";
+    width:8px;height:8px;
+    background:var(--ochre);
+    border-radius:50%;
+    display:inline-block;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:clamp(1.8rem, 4vw, 2.7rem);
+    line-height:1.05;
+    margin:.5rem 0 .5rem;
+    letter-spacing:-.01em;
+  }
+  h1 em{
+    font-style:italic;
+    font-weight:500;
+    color:var(--ochre);
+  }
+  .subtitle{
+    max-width:640px;
+    color:#D9DED2;
+    font-size:.98rem;
+    line-height:1.5;
+    margin:0 0 1.3rem;
+  }
+
+  .stats{
+    display:flex;
+    flex-wrap:wrap;
+    gap:1.4rem;
+    margin-top:1.2rem;
+  }
+  .stat{
+    font-family:'IBM Plex Mono', monospace;
+  }
+  .stat .n{
+    font-size:1.5rem;
+    font-weight:600;
+    color:var(--paper);
+    display:block;
+    line-height:1;
+  }
+  .stat .l{
+    font-size:.68rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:#A9B3A0;
+  }
+
+  .controls{
+    position:relative; z-index:1;
+    max-width:1200px;
+    margin:0 auto;
+    padding:1.1rem 1.75rem 0;
+    display:flex;
+    flex-wrap:wrap;
+    gap:.6rem;
+    align-items:center;
+  }
+  .chip{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.78rem;
+    padding:.4rem .85rem;
+    border-radius:99px;
+    border:1px solid var(--line-strong);
+    background:var(--card);
+    color:var(--ink-soft);
+    cursor:pointer;
+    transition:.15s ease;
+  }
+  .chip.active{
+    background:var(--blackboard);
+    border-color:var(--blackboard);
+    color:var(--paper);
+  }
+  .chip:hover{border-color:var(--ink);}
+
+  .search-wrap{
+    margin-left:auto;
+    position:relative;
+    flex:1 1 220px;
+    max-width:280px;
+  }
+  .search-wrap input{
+    width:100%;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:.85rem;
+    padding:.5rem .8rem .5rem 2rem;
+    border-radius:99px;
+    border:1px solid var(--line-strong);
+    background:var(--card);
+    color:var(--ink);
+  }
+  .search-wrap input:focus{outline:2px solid var(--teal); outline-offset:1px;}
+  .search-wrap::before{
+    content:"⌕";
+    position:absolute;
+    left:.75rem; top:50%;
+    transform:translateY(-50%);
+    color:var(--ink-soft);
+    font-size:1rem;
+  }
+
+  main{
+    position:relative; z-index:1;
+    max-width:1200px;
+    margin:1.4rem auto 3rem;
+    padding:0 1.75rem;
+    display:grid;
+    grid-template-columns: minmax(320px, 460px) 1fr;
+    gap:1.4rem;
+    align-items:start;
+  }
+
+  #list{
+    display:flex;
+    flex-direction:column;
+    gap:.9rem;
+    max-height:calc(100vh - 2rem);
+    overflow:visible;
+  }
+
+  .card{
+    position:relative;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-left:5px solid var(--teal);
+    border-radius:4px;
+    padding:1rem 1.1rem 1rem 1.15rem;
+    cursor:pointer;
+    transition:.15s ease;
+  }
+  .card[data-city="Malargüe"]{border-left-color:var(--ochre);}
+  .card:hover{
+    border-color:var(--line-strong);
+    transform:translateY(-1px);
+    box-shadow:0 4px 14px rgba(30,55,48,0.09);
+  }
+  .card.selected{
+    border-color:var(--blackboard);
+    box-shadow:0 4px 16px rgba(30,55,48,0.16);
+  }
+
+  .card-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:.6rem;
+  }
+  .code{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.78rem;
+    font-weight:600;
+    color:var(--ink-soft);
+    letter-spacing:.03em;
+  }
+  .stamp{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.62rem;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--brick);
+    border:1.5px dashed var(--brick);
+    border-radius:50%;
+    width:52px; height:52px;
+    display:flex; align-items:center; justify-content:center;
+    text-align:center;
+    transform:rotate(-8deg);
+    flex-shrink:0;
+    line-height:1.05;
+    padding:.2rem;
+    opacity:.85;
+  }
+
+  .rule{
+    border:none;
+    border-top:1px dashed var(--line-strong);
+    margin:.5rem 0 .6rem;
+  }
+
+  .name{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:1.15rem;
+    line-height:1.2;
+    margin:0 0 .3rem;
+  }
+  .address{
+    font-size:.85rem;
+    color:var(--ink-soft);
+    margin:0 0 .55rem;
+  }
+  .city-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.68rem;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--teal);
+  }
+  .card[data-city="Malargüe"] .city-tag{color:var(--ochre);}
+
+  .meta{
+    font-size:.82rem;
+    line-height:1.55;
+    color:var(--ink);
+  }
+  .meta b{font-weight:600;}
+  .meta .row{margin-bottom:.15rem;}
+
+  .modalidad{
+    margin-top:.55rem;
+    font-size:.8rem;
+    color:var(--ink-soft);
+    font-style:italic;
+  }
+
+  .card-actions{
+    margin-top:.7rem;
+    display:flex;
+    gap:.6rem;
+    flex-wrap:wrap;
+  }
+  .btn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.72rem;
+    letter-spacing:.03em;
+    padding:.38rem .7rem;
+    border-radius:3px;
+    border:1px solid var(--line-strong);
+    background:transparent;
+    color:var(--ink);
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    gap:.3rem;
+    transition:.15s;
+  }
+  .btn:hover{background:var(--blackboard); color:var(--paper); border-color:var(--blackboard);}
+
+  #map-col{
+    position:sticky;
+    top:1rem;
+  }
+  #map{
+    height:calc(100vh - 2rem);
+    min-height:460px;
+    border-radius:6px;
+    border:1px solid var(--line-strong);
+    box-shadow:0 6px 24px rgba(30,55,48,0.12);
+  }
+
+  .leaflet-popup-content-wrapper{
+    border-radius:4px;
+    font-family:'IBM Plex Sans', sans-serif;
+  }
+  .popup-code{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.7rem;
+    color:var(--ink-soft);
+  }
+  .popup-name{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:1rem;
+    margin:.15rem 0 .3rem;
+  }
+  .popup-addr{font-size:.8rem; color:var(--ink-soft);}
+
+  footer{
+    position:relative; z-index:1;
+    max-width:1200px;
+    margin:0 auto 2.5rem;
+    padding:1.2rem 1.75rem 0;
+    border-top:1px solid var(--line);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.72rem;
+    color:var(--ink-soft);
+  }
+
+  .empty{
+    font-size:.85rem;
+    color:var(--ink-soft);
+    padding:1.5rem;
+    text-align:center;
+    border:1px dashed var(--line-strong);
+    border-radius:4px;
+  }
+
+  @media (max-width: 880px){
+    main{grid-template-columns:1fr;}
+    #map-col{position:relative; top:0; order:-1;}
+    #map{height:46vh; min-height:280px;}
+    #list{max-height:none;}
+    .search-wrap{max-width:none; flex-basis:100%;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .card, .chip, .btn{transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="header-inner">
+    <div class="eyebrow">Dirección General de Escuelas · Supervisión Nº16</div>
+    <h1>Escuelas secundarias de <em>San Rafael</em> y Malargüe</h1>
+    <p class="subtitle">Directorio con ubicación, contacto y equipo directivo de las nueve escuelas orientadas de la supervisión. Elegí una escuela para verla en el mapa.</p>
+    <div class="stats">
+      <div class="stat"><span class="n">09</span><span class="l">Escuelas</span></div>
+      <div class="stat"><span class="n">07</span><span class="l">San Rafael</span></div>
+      <div class="stat"><span class="n">02</span><span class="l">Malargüe</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="controls">
+  <button class="chip active" data-filter="Todas">Todas</button>
+  <button class="chip" data-filter="San Rafael">San Rafael</button>
+  <button class="chip" data-filter="Malargüe">Malargüe</button>
+  <div class="search-wrap">
+    <input id="search" type="text" placeholder="Buscar por nombre…" autocomplete="off">
+  </div>
+</div>
+
+<main>
+  <div id="list"></div>
+  <div id="map-col"><div id="map"></div></div>
+</main>
+
+<footer>
+  Fuente: Nómina de escuelas secundarias por supervisión — DGE Mendoza (Supervisión Nº16, actualizado julio 2026). Ubicaciones aproximadas según domicilio declarado.
+</footer>
+
+<script>
+const schools = [
+  {
+    id:'4-102', name:'Antonio Buttini', city:'San Rafael',
+    address:'Ruta Nac. 144 km 671, Cuadro Benegas, San Rafael',
+    phone:'—', email:'dge4102@mendoza.edu.ar',
+    director:'Enzo Soratto', role:'Director',
+    staff:'Regente: Gabriela González · Secretaria: Silvina Alsinet',
+    modalidad:'Bachiller en Ciencias Naturales · Bachiller en Economía y Administración',
+    turno:'Mañana',
+    lat:-34.6523761, lng:-68.3793821
+  },
+  {
+    id:'4-127', name:'Centro Polivalente de Arte', city:'San Rafael',
+    address:'Av. Bartolomé Mitre 851, San Rafael Ciudad',
+    phone:'0260 442-5944', email:'polivalentesanrafael@gmail.com',
+    director:'Mónica Alessio', role:'Directora',
+    staff:'Vicedirectora: Derly Villarroel · Secretarias: Erica Cabezas, Leo Diaz',
+    modalidad:'Bachiller Especializado en Arte (Cerámica, Dibujo, Escultura, Grabado, Pintura, Danza, Música)',
+    turno:'Mañana / Tarde',
+    lat:-34.619841699999995, lng:-68.31762669999999
+  },
+  {
+    id:'4-129', name:'Ana Enriqueta Guyot de Calzada', city:'San Rafael',
+    address:'Coronel Plaza y Pasaje Bufano 546, San Rafael Ciudad',
+    phone:'0260 443-0302', email:'gestioncalzada@gmail.com',
+    director:'Silvia Totero', role:'Directora',
+    staff:'Vicedirectora: Mónica Alonso · Regente: Jael Espinosa · Secretaria: Laura Vanesa Ibarra',
+    modalidad:'Bachiller en Cs. Sociales y Humanidades · Bachiller en Economía y Administración',
+    turno:'Mañana / Tarde',
+    lat:-34.624268799999996, lng:-68.32546889999999
+  },
+  {
+    id:'4-138', name:'Aborigen Americano', city:'Malargüe',
+    address:'Francisco Villagra Oeste 651, B° Municipal, Malargüe',
+    phone:'0260 447-1456', email:'dge4138@mendoza.edu.ar',
+    director:'Carlos Fabián Monzón', role:'Director',
+    staff:'Vicedirector: Javier Palomeque · Secretaria: Patricia Martínez Siviero',
+    modalidad:'Bachiller en Economía y Administración · Bachiller en Turismo · Bachiller en Educación',
+    turno:'Mañana / Tarde',
+    lat:-35.4845672, lng:-69.5937422
+  },
+  {
+    id:'4-141', name:'Antonio Garbín', city:'San Rafael',
+    address:'Av. Rodolfo Iselin entre Salta y San Juan 800, San Rafael Ciudad',
+    phone:'0260 443-8021', email:'4141antoniogarbin@gmail.com',
+    director:'Mariela V. Fernández', role:'Directora',
+    staff:'Regente: Mariela Campos · Secretaria: Valeria García',
+    modalidad:'Bachiller con Orientación en Ciencias Naturales',
+    turno:'Mañana / Tarde',
+    lat:-34.6041352, lng:-68.3381789
+  },
+  {
+    id:'4-190', name:'Dr. James Watson Cronin', city:'Malargüe',
+    address:'Manuel Ruibal Este 1025, B° Llancanelo, Malargüe',
+    phone:'0260 447-1470', email:'dge4190@mendoza.edu.ar',
+    director:'Miguel E. Herrera', role:'Director',
+    staff:'Regente: José Luis Carrizo · Secretaria: Ivana Ayala',
+    modalidad:'Bachiller en Arte-Artes Visuales · Bachiller en Ciencias Naturales',
+    turno:'Mañana / Tarde',
+    lat:-35.471865, lng:-69.5715116
+  },
+  {
+    id:'4-195', name:'El Molino', city:'San Rafael',
+    address:'Federico Cantoni 151, B° El Molino, San Rafael',
+    phone:'0260 444-7859', email:'elmolino4195@gmail.com',
+    director:'Gustavo Cañada', role:'Director',
+    staff:'Regente: Gustavo Juri · Secretaria: Andrea Benetti',
+    modalidad:'Bachiller en Turismo',
+    turno:'Mañana',
+    lat:-34.648112999999995, lng:-68.3449302
+  },
+  {
+    id:'4-221', name:'Valentín A. Bianchi', city:'San Rafael',
+    address:'Av. Hipólito Yrigoyen 473, B° Ciudad, San Rafael',
+    phone:'0260 444-6748', email:'escuela4221@gmail.com',
+    director:'Mariela Vizcaino', role:'Directora',
+    staff:'Regente: Julia Toledo · Secretaria: Rosa Elena Temporín',
+    modalidad:'Bachiller en Ciencias Sociales y Humanidades',
+    turno:'Mañana / Tarde',
+    lat:-34.6147051, lng:-68.335808
+  },
+  {
+    id:'4-230', name:'José "Tico" Russo', city:'San Rafael',
+    address:'Maza 1450, B° Pueblo Diamante, San Rafael',
+    phone:'0260 442-1510', email:'escuela4230@gmail.com',
+    director:'Andrea Mónica Rojo', role:'Directora',
+    staff:'Regente: Romina Luján Martínez · Secretaria: Luciano Morgante',
+    modalidad:'Bachiller en Turismo',
+    turno:'Mañana',
+    lat:-34.6256644, lng:-68.3103649
+  }
+];
+
+const CITY_COLOR = { 'San Rafael':'#3E6259', 'Malargüe':'#C98A2E' };
+
+const map = L.map('map', { scrollWheelZoom:false });
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 18,
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+function makeIcon(city, active){
+  const color = CITY_COLOR[city];
+  const size = active ? 30 : 22;
+  return L.divIcon({
+    className:'',
+    html:`<div style="
+      width:${size}px;height:${size}px;border-radius:50%;
+      background:${color};
+      border:2.5px solid #FBF8EF;
+      box-shadow:0 2px 6px rgba(0,0,0,.35);
+    "></div>`,
+    iconSize:[size,size],
+    iconAnchor:[size/2, size/2]
+  });
+}
+
+const markers = {};
+schools.forEach(s=>{
+  const m = L.marker([s.lat, s.lng], { icon: makeIcon(s.city,false) }).addTo(map);
+  m.bindPopup(
+    `<div class="popup-code">${s.id}</div>
+     <div class="popup-name">${s.name}</div>
+     <div class="popup-addr">${s.address}</div>`
+  );
+  m.on('click', ()=> selectSchool(s.id, false));
+  markers[s.id] = m;
+});
+
+const allBounds = L.latLngBounds(schools.map(s=>[s.lat,s.lng]));
+map.fitBounds(allBounds, { padding:[40,40] });
+
+const listEl = document.getElementById('list');
+let currentFilter = 'Todas';
+let currentSearch = '';
+let selectedId = null;
+
+function render(){
+  const term = currentSearch.trim().toLowerCase();
+  const visible = schools.filter(s=>{
+    const cityOk = currentFilter==='Todas' || s.city===currentFilter;
+    const searchOk = !term || s.name.toLowerCase().includes(term) || s.id.includes(term);
+    return cityOk && searchOk;
+  });
+
+  listEl.innerHTML = '';
+  if(visible.length===0){
+    listEl.innerHTML = '<div class="empty">No hay escuelas que coincidan con la búsqueda.</div>';
+  }
+
+  visible.forEach(s=>{
+    const card = document.createElement('div');
+    card.className = 'card' + (s.id===selectedId ? ' selected' : '');
+    card.dataset.city = s.city;
+    card.dataset.id = s.id;
+    card.innerHTML = `
+      <div class="card-top">
+        <div>
+          <span class="code">Nº ${s.id}</span><br>
+          <span class="city-tag">${s.city}</span>
+        </div>
+        <div class="stamp">${s.turno.replace(' / ', '<br>')}</div>
+      </div>
+      <hr class="rule">
+      <div class="name">${s.name}</div>
+      <div class="address">${s.address}</div>
+      <div class="meta">
+        <div class="row"><b>${s.role}:</b> ${s.director}</div>
+        <div class="row">${s.staff}</div>
+        <div class="row">✆ ${s.phone} &nbsp;·&nbsp; ✉ ${s.email}</div>
+      </div>
+      <div class="modalidad">${s.modalidad}</div>
+      <div class="card-actions">
+        <button class="btn" data-action="map">Ver en el mapa ↦</button>
+        <a class="btn" target="_blank" rel="noopener"
+           href="https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}">Cómo llegar ↗</a>
+      </div>
+    `;
+    card.querySelector('[data-action="map"]').addEventListener('click', (e)=>{
+      e.stopPropagation();
+      selectSchool(s.id, true);
+    });
+    card.addEventListener('click', ()=> selectSchool(s.id, true));
+    listEl.appendChild(card);
+  });
+}
+
+function selectSchool(id, scrollMap){
+  selectedId = id;
+  const s = schools.find(x=>x.id===id);
+
+  // reset all icons
+  schools.forEach(sc=>{
+    markers[sc.id].setIcon(makeIcon(sc.city, sc.id===id));
+  });
+
+  render();
+
+  if(scrollMap){
+    map.flyTo([s.lat, s.lng], 15, { duration:.6 });
+    setTimeout(()=> markers[id].openPopup(), 350);
+    if(window.innerWidth <= 880){
+      document.getElementById('map').scrollIntoView({behavior:'smooth', block:'center'});
+    }
+  } else {
+    markers[id].openPopup();
+  }
+}
+
+document.querySelectorAll('.chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    currentFilter = chip.dataset.filter;
+    render();
+  });
+});
+
+document.getElementById('search').addEventListener('input', (e)=>{
+  currentSearch = e.target.value;
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
