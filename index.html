@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Escuelas Secundarias · Supervisión Nº16 · San Rafael y Malargüe</title>
+<title>Mapa de Infraestructura Educativa y Anexas · San Rafael y Malargüe</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,6 +22,9 @@
     --brick:#A63D2F;
     --ochre:#C98A2E;
     --teal:#3E6259;
+    --cens:#3F5E7A;
+    --cebja:#8C6A2F;
+    --caps:#B23A3A;
     --line: rgba(35,42,37,0.16);
     --line-strong: rgba(35,42,37,0.3);
   }
@@ -35,13 +38,11 @@
     -webkit-font-smoothing:antialiased;
   }
 
-  /* subtle paper texture */
   body::before{
     content:"";
     position:fixed; inset:0;
     pointer-events:none;
-    background-image:
-      radial-gradient(rgba(35,42,37,0.05) 1px, transparent 1px);
+    background-image: radial-gradient(rgba(35,42,37,0.05) 1px, transparent 1px);
     background-size: 3px 3px;
     opacity:.5;
     z-index:0;
@@ -54,7 +55,7 @@
     z-index:1;
     background:var(--blackboard);
     color:var(--paper);
-    padding:2.4rem 1.75rem 1.6rem;
+    padding:2.2rem 1.75rem 1.4rem;
     border-bottom:6px solid var(--brick);
   }
   .header-inner{
@@ -81,9 +82,9 @@
   h1{
     font-family:'Fraunces', serif;
     font-weight:700;
-    font-size:clamp(1.8rem, 4vw, 2.7rem);
-    line-height:1.05;
-    margin:.5rem 0 .5rem;
+    font-size:clamp(1.7rem, 3.8vw, 2.5rem);
+    line-height:1.08;
+    margin:.4rem 0 .4rem;
     letter-spacing:-.01em;
   }
   h1 em{
@@ -92,36 +93,39 @@
     color:var(--ochre);
   }
   .subtitle{
-    max-width:640px;
+    max-width:680px;
     color:#D9DED2;
-    font-size:.98rem;
+    font-size:.95rem;
     line-height:1.5;
-    margin:0 0 1.3rem;
+    margin:0 0 1rem;
   }
 
-  .stats{
+  /* PESTAÑAS PRINCIPALES */
+  .section-toggle{
+    position:relative; z-index:1;
+    max-width:1200px;
+    margin:0 auto;
+    padding:1rem 1.75rem 0;
     display:flex;
-    flex-wrap:wrap;
-    gap:1.4rem;
-    margin-top:1.2rem;
+    gap:1.2rem;
+    border-bottom:2px solid var(--line-strong);
   }
-  .stat{
-    font-family:'IBM Plex Mono', monospace;
+  .section-btn{
+    font-family:'Fraunces', serif; font-weight:600; font-size:1.1rem;
+    background:none; border:none; cursor:pointer;
+    padding:.6rem .2rem .7rem; color:var(--ink-soft);
+    border-bottom:3.5px solid transparent;
+    margin-bottom:-2px;
+    transition:.15s;
   }
-  .stat .n{
-    font-size:1.5rem;
-    font-weight:600;
-    color:var(--paper);
-    display:block;
-    line-height:1;
+  .section-btn .count{
+    font-family:'IBM Plex Mono', monospace; font-size:.72rem;
+    color:var(--ink-soft); font-weight:400;
   }
-  .stat .l{
-    font-size:.68rem;
-    letter-spacing:.08em;
-    text-transform:uppercase;
-    color:#A9B3A0;
-  }
+  .section-btn.active{color:var(--ink); border-bottom-color:var(--brick);}
+  .section-btn:hover{color:var(--ink);}
 
+  /* BARRA DE CONTROLES Y FILTROS */
   .controls{
     position:relative; z-index:1;
     max-width:1200px;
@@ -141,6 +145,7 @@
     background:var(--card);
     color:var(--ink-soft);
     cursor:pointer;
+    display:inline-flex; align-items:center; gap:.4rem;
     transition:.15s ease;
   }
   .chip.active{
@@ -149,6 +154,15 @@
     color:var(--paper);
   }
   .chip:hover{border-color:var(--ink);}
+
+  .dot{width:8px; height:8px; border-radius:50%; display:inline-block;}
+  .chip[data-cat="cens"].active{background:var(--cens); border-color:var(--cens); color:#fff;}
+  .chip[data-cat="cebja"].active{background:var(--cebja); border-color:var(--cebja); color:#fff;}
+  .chip[data-cat="caps"].active{background:var(--caps); border-color:var(--caps); color:#fff;}
+  .chip[data-cat="cens"] .dot{background:var(--cens);}
+  .chip[data-cat="cebja"] .dot{background:var(--cebja);}
+  .chip[data-cat="caps"] .dot{background:var(--caps);}
+  .chip.active .dot{background:#fff;}
 
   .search-wrap{
     margin-left:auto;
@@ -179,10 +193,10 @@
   main{
     position:relative; z-index:1;
     max-width:1200px;
-    margin:1.4rem auto 3rem;
+    margin:1.2rem auto 3rem;
     padding:0 1.75rem;
     display:grid;
-    grid-template-columns: minmax(320px, 460px) 1fr;
+    grid-template-columns: minmax(320px, 480px) 1fr;
     gap:1.4rem;
     align-items:start;
   }
@@ -192,8 +206,16 @@
     flex-direction:column;
     gap:.9rem;
     max-height:calc(100vh - 2rem);
-    overflow:visible;
+    overflow-y:auto;
+    padding-right:.3rem;
   }
+
+  .panel-note{
+    font-size:.82rem; color:var(--ink-soft); line-height:1.5;
+    background:var(--card); border:1px dashed var(--line-strong);
+    border-radius:4px; padding:.75rem .95rem; margin-bottom:.4rem;
+  }
+  .panel-note b{color:var(--ink);}
 
   .card{
     position:relative;
@@ -201,11 +223,15 @@
     border:1px solid var(--line);
     border-left:5px solid var(--teal);
     border-radius:4px;
-    padding:1rem 1.1rem 1rem 1.15rem;
+    padding:1rem 1.1rem 1.05rem 1.15rem;
     cursor:pointer;
     transition:.15s ease;
   }
   .card[data-city="Malargüe"]{border-left-color:var(--ochre);}
+  .card[data-type="cens"]{border-left-color:var(--cens);}
+  .card[data-type="cebja"]{border-left-color:var(--cebja);}
+  .card[data-type="caps"]{border-left-color:var(--caps);}
+
   .card:hover{
     border-color:var(--line-strong);
     transform:translateY(-1px);
@@ -246,6 +272,13 @@
     padding:.2rem;
     opacity:.85;
   }
+  .tag{
+    font-family:'IBM Plex Mono', monospace; font-size:.65rem; text-transform:uppercase;
+    letter-spacing:.06em; padding:.2rem .55rem; border-radius:99px; color:#fff;
+  }
+  .card[data-type="cens"] .tag{background:var(--cens);}
+  .card[data-type="cebja"] .tag{background:var(--cebja);}
+  .card[data-type="caps"] .tag{background:var(--caps);}
 
   .rule{
     border:none;
@@ -289,8 +322,48 @@
     font-style:italic;
   }
 
+  /* LISTADO DE AULAS PARA CENS / CEBJA */
+  .aulas{list-style:none; margin:.6rem 0 0; padding:0; border-top:1px dashed var(--line-strong); padding-top:.55rem;}
+  .aulas li{
+    font-size:.82rem; padding:.4rem 0; border-bottom:1px dotted var(--line);
+    display:flex; flex-direction:column; gap:.15rem;
+  }
+  .aulas li:last-child{border-bottom:none;}
+  .aula-addr{font-weight:500;}
+  .aula-meta{color:var(--ink-soft); font-size:.76rem; display:flex; justify-content:space-between; align-items:center;}
+  .aula-btn{
+    font-family:'IBM Plex Mono', monospace; font-size:.68rem; padding:.15rem .45rem;
+    background:transparent; border:1px solid var(--line-strong); border-radius:3px; cursor:pointer;
+  }
+  .aula-btn:hover{background:var(--blackboard); color:var(--paper);}
+
+  /* BOTONES DE CAPS INTERACTIVOS */
+  .caps-list{display:flex; flex-wrap:wrap; gap:.45rem; margin-top:.6rem;}
+  .caps-item-btn{
+    font-family:'IBM Plex Mono', monospace; font-size:.74rem;
+    background:rgba(178,58,58,0.08); color:var(--brick);
+    border:1px solid rgba(178,58,58,0.3);
+    border-radius:4px; padding:.35rem .6rem;
+    cursor:pointer;
+    transition:.15s ease;
+    text-align:left;
+  }
+  .caps-item-btn:hover{
+    background:var(--caps);
+    color:#fff;
+    border-color:var(--caps);
+    transform:translateY(-1px);
+    box-shadow:0 2px 6px rgba(178,58,58,0.25);
+  }
+  .caps-item-btn.active{
+    background:var(--caps);
+    color:#fff;
+    border-color:var(--caps);
+    font-weight:600;
+  }
+
   .card-actions{
-    margin-top:.7rem;
+    margin-top:.75rem;
     display:flex;
     gap:.6rem;
     flex-wrap:wrap;
@@ -340,6 +413,7 @@
     margin:.15rem 0 .3rem;
   }
   .popup-addr{font-size:.8rem; color:var(--ink-soft);}
+  .popup-time{font-family:'IBM Plex Mono', monospace; font-size:.72rem; color:var(--brick); margin-top:.3rem;}
 
   footer{
     position:relative; z-index:1;
@@ -370,7 +444,7 @@
   }
 
   @media (prefers-reduced-motion: reduce){
-    .card, .chip, .btn{transition:none;}
+    .card, .chip, .btn, .caps-item-btn{transition:none;}
   }
 </style>
 </head>
@@ -378,23 +452,37 @@
 
 <header class="site">
   <div class="header-inner">
-    <div class="eyebrow">Dirección General de Escuelas · Supervisión Nº16</div>
-    <h1>Escuelas secundarias de <em>San Rafael</em> y Malargüe</h1>
-    <p class="subtitle">Directorio con ubicación, contacto y equipo directivo de las nueve escuelas orientadas de la supervisión. Elegí una escuela para verla en el mapa.</p>
-    <div class="stats">
-      <div class="stat"><span class="n">09</span><span class="l">Escuelas</span></div>
-      <div class="stat"><span class="n">07</span><span class="l">San Rafael</span></div>
-      <div class="stat"><span class="n">02</span><span class="l">Malargüe</span></div>
-    </div>
+    <div class="eyebrow">Dirección General de Escuelas & Network de Salud · San Rafael y Malargüe</div>
+    <h1>Supervisión 16 Directorio de <em>Escuelas</em> e Instituciones Anexas</h1>
+    <p class="subtitle">Mapeo unificado de infraestructura educativa (Escuelas Secundarias, CENS, CEBJA) y Centros de Atención Primaria de la Salud (CAPS). Explorá las sedes y anexos geolocalizados.</p>
   </div>
 </header>
 
+<!-- NIVEL 1: PESTAÑAS PRINCIPALES -->
+<div class="section-toggle">
+  <button class="section-btn active" data-section="escuelas">Escuelas Secundarias <span class="count">(9)</span></button>
+  <button class="section-btn" data-section="anexas">Instituciones Anexas <span class="count">(CENS · CEBJA · CAPS)</span></button>
+</div>
+
+<!-- CONTROLES NIVELES 2 -->
 <div class="controls">
-  <button class="chip active" data-filter="Todas">Todas</button>
-  <button class="chip" data-filter="San Rafael">San Rafael</button>
-  <button class="chip" data-filter="Malargüe">Malargüe</button>
+  <!-- Filtros Secundarias -->
+  <div id="controls-escuelas" class="ctrl-group">
+    <button class="chip active" data-filter="Todas">Todas</button>
+    <button class="chip" data-filter="San Rafael">San Rafael</button>
+    <button class="chip" data-filter="Malargüe">Malargüe</button>
+  </div>
+
+  <!-- Filtros Anexas -->
+  <div id="controls-anexas" class="ctrl-group" style="display:none;">
+    <button class="chip active" data-cat="all">Todas las Anexas</button>
+    <button class="chip" data-cat="cens"><span class="dot"></span> CENS</button>
+    <button class="chip" data-cat="cebja"><span class="dot"></span> CEBJA</button>
+    <button class="chip" data-cat="caps"><span class="dot"></span> CAPS (Salud)</button>
+  </div>
+
   <div class="search-wrap">
-    <input id="search" type="text" placeholder="Buscar por nombre…" autocomplete="off">
+    <input id="search" type="text" placeholder="Buscar por nombre o número…" autocomplete="off">
   </div>
 </div>
 
@@ -404,114 +492,231 @@
 </main>
 
 <footer>
-  Fuente: Nómina de escuelas secundarias por supervisión — DGE Mendoza (Supervisión Nº16, actualizado julio 2026). Ubicaciones aproximadas según domicilio declarado.
+  Fuente: Nómina de escuelas secundarias por supervisión (Supervisión Nº16) y registros de Centros de Jóvenes y Adultos (CEBJA/CENS) y Red Sanitaria provincial (San Rafael/Malargüe).
 </footer>
 
 <script>
+// --- DATOS UNIFICADOS ---
+
 const schools = [
   {
-    id:'4-102', name:'Antonio Buttini', city:'San Rafael',
+    type:'escuela', id:'4-102', name:'Antonio Buttini', city:'San Rafael',
     address:'Ruta Nac. 144 km 671, Cuadro Benegas, San Rafael',
     phone:'—', email:'dge4102@mendoza.edu.ar',
     director:'Enzo Soratto', role:'Director',
     staff:'Regente: Gabriela González · Secretaria: Silvina Alsinet',
     modalidad:'Bachiller en Ciencias Naturales · Bachiller en Economía y Administración',
-    turno:'Mañana',
-    lat:-34.6523761, lng:-68.3793821
+    turno:'Mañana', lat:-34.6523761, lng:-68.3793821
   },
   {
-    id:'4-127', name:'Centro Polivalente de Arte', city:'San Rafael',
+    type:'escuela', id:'4-127', name:'Centro Polivalente de Arte', city:'San Rafael',
     address:'Av. Bartolomé Mitre 851, San Rafael Ciudad',
     phone:'0260 442-5944', email:'polivalentesanrafael@gmail.com',
     director:'Mónica Alessio', role:'Directora',
     staff:'Vicedirectora: Derly Villarroel · Secretarias: Erica Cabezas, Leo Diaz',
     modalidad:'Bachiller Especializado en Arte (Cerámica, Dibujo, Escultura, Grabado, Pintura, Danza, Música)',
-    turno:'Mañana / Tarde',
-    lat:-34.619841699999995, lng:-68.31762669999999
+    turno:'Mañana / Tarde', lat:-34.6198417, lng:-68.3176267
   },
   {
-    id:'4-129', name:'Ana Enriqueta Guyot de Calzada', city:'San Rafael',
+    type:'escuela', id:'4-129', name:'Ana Enriqueta Guyot de Calzada', city:'San Rafael',
     address:'Coronel Plaza y Pasaje Bufano 546, San Rafael Ciudad',
     phone:'0260 443-0302', email:'gestioncalzada@gmail.com',
     director:'Silvia Totero', role:'Directora',
     staff:'Vicedirectora: Mónica Alonso · Regente: Jael Espinosa · Secretaria: Laura Vanesa Ibarra',
     modalidad:'Bachiller en Cs. Sociales y Humanidades · Bachiller en Economía y Administración',
-    turno:'Mañana / Tarde',
-    lat:-34.624268799999996, lng:-68.32546889999999
+    turno:'Mañana / Tarde', lat:-34.6242688, lng:-68.3254689
   },
   {
-    id:'4-138', name:'Aborigen Americano', city:'Malargüe',
+    type:'escuela', id:'4-138', name:'Aborigen Americano', city:'Malargüe',
     address:'Francisco Villagra Oeste 651, B° Municipal, Malargüe',
     phone:'0260 447-1456', email:'dge4138@mendoza.edu.ar',
     director:'Carlos Fabián Monzón', role:'Director',
     staff:'Vicedirector: Javier Palomeque · Secretaria: Patricia Martínez Siviero',
     modalidad:'Bachiller en Economía y Administración · Bachiller en Turismo · Bachiller en Educación',
-    turno:'Mañana / Tarde',
-    lat:-35.4845672, lng:-69.5937422
+    turno:'Mañana / Tarde', lat:-35.4845672, lng:-69.5937422
   },
   {
-    id:'4-141', name:'Antonio Garbín', city:'San Rafael',
+    type:'escuela', id:'4-141', name:'Antonio Garbín', city:'San Rafael',
     address:'Av. Rodolfo Iselin entre Salta y San Juan 800, San Rafael Ciudad',
     phone:'0260 443-8021', email:'4141antoniogarbin@gmail.com',
     director:'Mariela V. Fernández', role:'Directora',
     staff:'Regente: Mariela Campos · Secretaria: Valeria García',
     modalidad:'Bachiller con Orientación en Ciencias Naturales',
-    turno:'Mañana / Tarde',
-    lat:-34.6041352, lng:-68.3381789
+    turno:'Mañana / Tarde', lat:-34.6041352, lng:-68.3381789
   },
   {
-    id:'4-190', name:'Dr. James Watson Cronin', city:'Malargüe',
+    type:'escuela', id:'4-190', name:'Dr. James Watson Cronin', city:'Malargüe',
     address:'Manuel Ruibal Este 1025, B° Llancanelo, Malargüe',
     phone:'0260 447-1470', email:'dge4190@mendoza.edu.ar',
     director:'Miguel E. Herrera', role:'Director',
     staff:'Regente: José Luis Carrizo · Secretaria: Ivana Ayala',
     modalidad:'Bachiller en Arte-Artes Visuales · Bachiller en Ciencias Naturales',
-    turno:'Mañana / Tarde',
-    lat:-35.471865, lng:-69.5715116
+    turno:'Mañana / Tarde', lat:-35.471865, lng:-69.5715116
   },
   {
-    id:'4-195', name:'El Molino', city:'San Rafael',
+    type:'escuela', id:'4-195', name:'El Molino', city:'San Rafael',
     address:'Federico Cantoni 151, B° El Molino, San Rafael',
     phone:'0260 444-7859', email:'elmolino4195@gmail.com',
     director:'Gustavo Cañada', role:'Director',
     staff:'Regente: Gustavo Juri · Secretaria: Andrea Benetti',
     modalidad:'Bachiller en Turismo',
-    turno:'Mañana',
-    lat:-34.648112999999995, lng:-68.3449302
+    turno:'Mañana', lat:-34.648113, lng:-68.3449302
   },
   {
-    id:'4-221', name:'Valentín A. Bianchi', city:'San Rafael',
+    type:'escuela', id:'4-221', name:'Valentín A. Bianchi', city:'San Rafael',
     address:'Av. Hipólito Yrigoyen 473, B° Ciudad, San Rafael',
     phone:'0260 444-6748', email:'escuela4221@gmail.com',
     director:'Mariela Vizcaino', role:'Directora',
     staff:'Regente: Julia Toledo · Secretaria: Rosa Elena Temporín',
     modalidad:'Bachiller en Ciencias Sociales y Humanidades',
-    turno:'Mañana / Tarde',
-    lat:-34.6147051, lng:-68.335808
+    turno:'Mañana / Tarde', lat:-34.6147051, lng:-68.335808
   },
   {
-    id:'4-230', name:'José "Tico" Russo', city:'San Rafael',
+    type:'escuela', id:'4-230', name:'José "Tico" Russo', city:'San Rafael',
     address:'Maza 1450, B° Pueblo Diamante, San Rafael',
     phone:'0260 442-1510', email:'escuela4230@gmail.com',
     director:'Andrea Mónica Rojo', role:'Directora',
     staff:'Regente: Romina Luján Martínez · Secretaria: Luciano Morgante',
     modalidad:'Bachiller en Turismo',
-    turno:'Mañana',
-    lat:-34.6256644, lng:-68.3103649
+    turno:'Mañana', lat:-34.6256644, lng:-68.3103649
   }
 ];
 
-const CITY_COLOR = { 'San Rafael':'#3E6259', 'Malargüe':'#C98A2E' };
+const annexes = [
+  // CENS
+  {
+    type:'cens', id:'3-428', name:'Prof. Arturo Blanco', city:'San Rafael',
+    email:'sede5cens@mendoza.edu.ar',
+    aulas:[
+      { name:'Núcleo Central', addr:'San Juan Bosco 182, San Rafael', time:'Lun a Vie 19:10 a 00:00 hs', lat:-34.6212, lng:-68.3365 },
+      { name:'Aula Anexa B° El Sosneado', addr:'Av. Balloffet 2210 (Esc. Isidro Zapata)', time:'Lun a Jue 19:00 a 23:10 hs', lat:-34.6398, lng:-68.3482 },
+      { name:'Aula Anexa Villa Laredo', addr:'Leonardo Da Vinci y Fleming', time:'Mar a Jue 15:40 a 19:50 hs', lat:-34.6125, lng:-68.3090 },
+      { name:'Aula Anexa Cuadro Nacional', addr:'Av. Santa María de Oro 378', time:'Lun a Vie 14:30 a 17:30 hs', lat:-34.6015, lng:-68.2750 },
+      { name:'Aula Satélite Las Paredes', addr:'Navazzo s/n, Capitán Montoya', time:'Lun a Vie 18:30 a 21:50 hs', lat:-34.6050, lng:-68.4210 },
+      { name:'Anexo Las Paredes', addr:'El Toledano y Ortubia', time:'Lun a Vie 15:30 a 19:00 hs', lat:-34.5980, lng:-68.3850 }
+    ]
+  },
+  {
+    type:'cens', id:'3-436', name:'Cacica M. Josefa Roco', city:'San Rafael',
+    aulas:[
+      { name:'Núcleo Central', addr:'Av. 9 de Julio 50, San Rafael', time:'Lun a Vie 19:30 a 23:10 hs', lat:-34.6180, lng:-68.3305 },
+      { name:'Aula Anexa Sindicato Municipal', addr:'Av. Zapata 147, San Rafael', time:'Mié y Vie 14:00 a 17:30 hs', lat:-34.6195, lng:-68.3280 },
+      { name:'Aula Anexa El Cerrito', addr:'Adolfo Calle s/n (Delegación)', time:'Lun a Vie 14:00 a 17:30 hs', lat:-34.5920, lng:-68.2910 }
+    ]
+  },
+  {
+    type:'cens', id:'3-490', name:'Santa María del Silencio', city:'San Rafael',
+    aulas:[
+      { name:'Sede Central (1° Piso)', addr:'Godoy Cruz 270, San Rafael', time:'Lun a Vie 14:00 a 17:30 hs', lat:-34.6225, lng:-68.3340 },
+      { name:'Anexo Ciudad', addr:'Olascoaga 780', time:'Lun a Vie 19:00 a 22:30 hs', lat:-34.6280, lng:-68.3250 },
+      { name:'Aula Anexa Rama Caída', addr:'Ejército de los Andes s/n (1° Piso)', time:'Lun a Vie 20:00 a 12:00 hs', lat:-34.6620, lng:-68.3750 }
+    ]
+  },
 
+  // CEBJA
+  {
+    type:'cebja', id:'Sede-V', name:'Sede Inscription CEBJA Supervisión V', city:'San Rafael',
+    phone:'261-3030499', email:'sede5cebja@mendoza.edu.ar',
+    aulas:[
+      { name:'Sede Administrativa Central', addr:'Belgrano 182 (Planta Alta), San Rafael', time:'Lun a Vie 8:00 a 13:00 / 14:00 a 17:00 hs', lat:-34.6186, lng:-68.3341 }
+    ]
+  },
+  {
+    type:'cebja', id:'3-015', name:'Teniente 1º Ibáñez', city:'San Rafael',
+    phone:'260-4225497',
+    aulas:[
+      { name:'Sede Principal', addr:'Av. Hipólito Yrigoyen 473', time:'Lun a Vie 19:00 a 22:30 hs', lat:-34.6147, lng:-68.3358 },
+      { name:'Anexo El Cerrito', addr:'Adolfo Calle 6400', time:'Lun a Vie 13:45 a 17:15 hs', lat:-34.5910, lng:-68.2850 }
+    ]
+  },
+  {
+    type:'cebja', id:'3-066', name:'Prof. Norma S. Díaz', city:'San Rafael',
+    phone:'260-4626867',
+    aulas:[
+      { name:'Sede Principal', addr:'Olascoaga 780', time:'Lun a Vie 19:00 a 22:30 hs', lat:-34.6281, lng:-68.3252 },
+      { name:'Anexo Bibl. Peñasco', addr:'Mitre 1233', time:'Lun a Vie 14:00 a 17:00 hs', lat:-34.6165, lng:-68.3120 },
+      { name:'Anexo UTN', addr:'Mitre 166', time:'Lun a Vie 14:00 a 17:30 hs', lat:-34.6190, lng:-68.3290 }
+    ]
+  },
+  {
+    type:'cebja', id:'3-097', name:'Arnaldo Arturo Lindauer', city:'San Rafael',
+    phone:'260-4400801',
+    aulas:[
+      { name:'Sede Rama Caída', addr:'Ejército de los Andes s/n', time:'Lun a Vie 18:30 a 22:00 hs', lat:-34.6620, lng:-68.3750 },
+      { name:'Anexo Cuadro Benegas (Esc. Buttini)', addr:'Ruta 144, Cuadro Benegas', time:'Lun a Vie 16:20 a 19:50 hs', lat:-34.6524, lng:-68.3794 },
+      { name:'Anexo B° El Sosneado (CIC)', addr:'Jacarandá s/n, B° El Sosneado', time:'Lun a Vie 14:30 a 18:00 hs', lat:-34.6410, lng:-68.3510 },
+      { name:'Anexo La Isla', addr:'Amapola 100, Unión Vecinal', time:'Lun a Vie 14:30 a 18:00 hs', lat:-34.6320, lng:-68.3050 }
+    ]
+  },
+
+  // CAPS GEOLOCALIZADOS
+  {
+    type:'caps', id:'CAPS-REF', name:'Centros de Atención Primaria de la Salud (Generales)', city:'San Rafael',
+    items:[
+      { id:'c183', name:'Nº 183 Valle Grande', lat:-34.7214, lng:-68.4412, addr:'Valle Grande, San Rafael' },
+      { id:'c130', name:'Nº 130 Salto de las Rosas', lat:-34.6642, lng:-68.2163, addr:'Salto de las Rosas, Cañada Seca' },
+      { id:'c158', name:'Nº 158 Cuadro Nacional', lat:-34.6127, lng:-68.2729, addr:'Cuadro Nacional, San Rafael' },
+      { id:'c113', name:'Nº 113 Monte Comán', lat:-34.5956, lng:-67.8994, addr:'Monte Comán, San Rafael' },
+      { id:'c164', name:'Nº 164 Capitán Montoya', lat:-34.5816, lng:-68.4579, addr:'Capitán Montoya, Las Paredes' },
+      { id:'c114', name:'Nº 114 Villa Atuel', lat:-34.8300, lng:-67.9247, addr:'Villa Atuel, San Rafael' },
+      { id:'c159', name:'Nº 159 Isla del Río Diamante', lat:-34.6385, lng:-68.3280, addr:'Amigorena s/n, Isla del Río Diamante' },
+      { id:'c175', name:'Nº 175 El Cerrito', lat:-34.5889, lng:-68.3051, addr:'Adolfo Calle s/n, El Cerrito' },
+      { id:'c107', name:'Nº 107 Villa 25 de Mayo', lat:-34.5861, lng:-68.4811, addr:'Villas 25 de Mayo, San Rafael' },
+      { id:'c115', name:'Nº 115 Real del Padre', lat:-34.8451, lng:-67.7123, addr:'Real del Padre, San Rafael' },
+      { id:'c119', name:'Nº 119 Rama Caída', lat:-34.6683, lng:-68.3842, addr:'Ejército de los Andes s/n, Rama Caída' },
+      { id:'c117', name:'Nº 117 El Nihuil', lat:-35.0231, lng:-68.6811, addr:'El Nihuil, San Rafael' },
+      { id:'c180', name:'Nº 180 Goudge', lat:-34.6472, lng:-68.1215, addr:'Goudge, San Rafael' },
+      { id:'c_pobre', name:'Posta Sanitaria Pobre Diablo', lat:-34.6511, lng:-68.3540, addr:'Pobre Diablo, San Rafael' },
+      { id:'c142', name:'Nº 142 Cuadro Bombal', lat:-34.6210, lng:-68.2410, addr:'Cuadro Bombal, San Rafael' },
+      { id:'c_palermo', name:'Posta Sanitaria Palermo Chico', lat:-34.6730, lng:-68.3120, addr:'Palermo Chico, San Rafael' },
+      { id:'c123', name:'Nº 123 Punta del Agua', lat:-35.5204, lng:-68.0531, addr:'Punta del Agua, San Rafael' },
+      { id:'c116', name:'Nº 116 Cuadro Benegas', lat:-34.6455, lng:-68.4231, addr:'Cuadro Benegas, San Rafael' }
+    ]
+  },
+  {
+    type:'caps', id:'CAPS-PSI', name:'CAPS con Atención Psicológica', city:'San Rafael',
+    items:[
+      { id:'c325', name:'Nº 325 Pueblo Diamante', lat:-34.6256, lng:-68.3103, addr:'Pueblo Diamante, San Rafael' },
+      { id:'c327', name:'Nº 327 Barrio Constitución', lat:-34.6112, lng:-68.3185, addr:'Telles Meneses y Paunero' },
+      { id:'c329', name:'Nº 329 Barrio El Sosneado', lat:-34.6410, lng:-68.3510, addr:'Jacarandá s/n, B° El Sosneado' },
+      { id:'c339', name:'Nº 339 El Chañaral', lat:-34.6540, lng:-68.3150, addr:'El Chañaral, San Rafael' },
+      { id:'c340', name:'Nº 340 La Pichana', lat:-34.6810, lng:-68.2250, addr:'La Pichana, Cañada Seca' },
+      { id:'c344', name:'Nº 344 Cuadro Bombal', lat:-34.6215, lng:-68.2415, addr:'Cuadro Bombal, San Rafael' },
+      { id:'c346', name:'Nº 346 Los Coroneles', lat:-34.7012, lng:-68.3980, addr:'Los Coroneles, Cuadro Benegas' },
+      { id:'c349', name:'Nº 349 Villa Laredo', lat:-34.6125, lng:-68.3090, addr:'Villa Laredo, San Rafael' },
+      { id:'c351', name:'Nº 351 El Tropezón', lat:-34.6412, lng:-68.2580, addr:'El Tropezón, San Rafael' },
+      { id:'c359', name:'Nº 359 Malvinas Sur', lat:-34.9120, lng:-68.2100, addr:'Malvinas Sur, San Rafael' },
+      { id:'c361', name:'Nº 361 El Escorial', lat:-34.7450, lng:-67.9850, addr:'El Escorial, Jaime Prats' },
+      { id:'c513', name:'Nº 513 Bentos y Los Sauces', lat:-34.6080, lng:-68.3620, addr:'Calle Los Sauces, San Rafael' },
+      { id:'c514', name:'Nº 514 El Toledano', lat:-34.5980, lng:-68.3850, addr:'El Toledano, Las Paredes' },
+      { id:'c539', name:'Nº 539 Colonia López', lat:-34.8120, lng:-67.8500, addr:'Colonia López, Villa Atuel' },
+      { id:'c541', name:'Nº 541 Centro Modular', lat:-34.6210, lng:-68.3410, addr:'General Alvear y Maipú' },
+      { id:'c542', name:'Nº 542 Barrio Municipal', lat:-34.6050, lng:-68.3210, addr:'Barrio Municipal, San Rafael' },
+      { id:'c558', name:'Nº 558 Real Del Padre', lat:-34.8455, lng:-67.7130, addr:'Real del Padre Centro' },
+      { id:'c324', name:'Nº 324 Los Claveles', lat:-34.6750, lng:-68.2610, addr:'Los Claveles, Cañada Seca' },
+      { id:'c320', name:'Nº 320 El Molino', lat:-34.6481, lng:-68.3449, addr:'Federico Cantoni, B° El Molino' },
+      { id:'c360', name:'Nº 360 Calle Larga', lat:-34.7120, lng:-68.2810, addr:'Calle Larga, San Rafael' }
+    ]
+  }
+];
+
+const COLOR_MAP = {
+  'escuela':'#3E6259',
+  'cens':'#3F5E7A',
+  'cebja':'#8C6A2F',
+  'caps':'#B23A3A'
+};
+
+// INITIALIZE MAP
 const map = L.map('map', { scrollWheelZoom:false });
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 18,
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-function makeIcon(city, active){
-  const color = CITY_COLOR[city];
-  const size = active ? 30 : 22;
+function makeIcon(type, active){
+  const color = COLOR_MAP[type] || '#1E3730';
+  const size = active ? 28 : 20;
   return L.divIcon({
     className:'',
     html:`<div style="
@@ -526,106 +731,315 @@ function makeIcon(city, active){
 }
 
 const markers = {};
+
+// Register School Markers
 schools.forEach(s=>{
-  const m = L.marker([s.lat, s.lng], { icon: makeIcon(s.city,false) }).addTo(map);
+  const m = L.marker([s.lat, s.lng], { icon: makeIcon('escuela', false) });
   m.bindPopup(
-    `<div class="popup-code">${s.id}</div>
+    `<div class="popup-code">Escuela Sec. Nº ${s.id}</div>
      <div class="popup-name">${s.name}</div>
      <div class="popup-addr">${s.address}</div>`
   );
-  m.on('click', ()=> selectSchool(s.id, false));
-  markers[s.id] = m;
+  m.on('click', ()=> selectItem(s.id, 'escuelas', false));
+  markers[s.id] = [m];
 });
 
-const allBounds = L.latLngBounds(schools.map(s=>[s.lat,s.lng]));
-map.fitBounds(allBounds, { padding:[40,40] });
+// Register Annex Markers (CENS, CEBJA y CAPS)
+annexes.forEach(a=>{
+  markers[a.id] = [];
+  if(a.type === 'caps' && a.items){
+    a.items.forEach(c=>{
+      if(c.lat && c.lng){
+        const m = L.marker([c.lat, c.lng], { icon: makeIcon('caps', false) });
+        m.bindPopup(
+          `<div class="popup-code">CENTRO DE SALUD</div>
+           <div class="popup-name">${c.name}</div>
+           <div class="popup-addr">${c.addr}</div>`
+        );
+        m.on('click', ()=> selectCapsItem(c.id, c.lat, c.lng, false));
+        markers[c.id] = [m];
+      }
+    });
+  } else if(a.aulas && a.aulas.length > 0){
+    a.aulas.forEach((aula)=>{
+      if(aula.lat && aula.lng){
+        const m = L.marker([aula.lat, aula.lng], { icon: makeIcon(a.type, false) });
+        m.bindPopup(
+          `<div class="popup-code">${a.type.toUpperCase()} ${a.id} — ${aula.name}</div>
+           <div class="popup-name">${a.name}</div>
+           <div class="popup-addr">${aula.addr}</div>
+           <div class="popup-time">⏰ ${aula.time}</div>`
+        );
+        m.on('click', ()=> selectItem(a.id, 'anexas', false));
+        markers[a.id].push(m);
+      }
+    });
+  }
+});
 
-const listEl = document.getElementById('list');
-let currentFilter = 'Todas';
+// Fit bounds initial
+const allSchoolCoords = schools.map(s=>[s.lat,s.lng]);
+map.fitBounds(L.latLngBounds(allSchoolCoords), { padding:[40,40] });
+
+// NAVIGATION STATE
+let currentSection = 'escuelas'; // 'escuelas' | 'anexas'
+let currentEscuelasFilter = 'Todas'; // 'Todas' | 'San Rafael' | 'Malargüe'
+let currentAnexasCat = 'all'; // 'all' | 'cens' | 'cebja' | 'caps'
 let currentSearch = '';
 let selectedId = null;
 
-function render(){
-  const term = currentSearch.trim().toLowerCase();
-  const visible = schools.filter(s=>{
-    const cityOk = currentFilter==='Todas' || s.city===currentFilter;
-    const searchOk = !term || s.name.toLowerCase().includes(term) || s.id.includes(term);
-    return cityOk && searchOk;
+const listEl = document.getElementById('list');
+
+function updateMarkersVisibility(){
+  // Hide all markers
+  Object.keys(markers).forEach(k=>{
+    markers[k].forEach(m=> map.removeLayer(m));
   });
 
-  listEl.innerHTML = '';
-  if(visible.length===0){
-    listEl.innerHTML = '<div class="empty">No hay escuelas que coincidan con la búsqueda.</div>';
-  }
-
-  visible.forEach(s=>{
-    const card = document.createElement('div');
-    card.className = 'card' + (s.id===selectedId ? ' selected' : '');
-    card.dataset.city = s.city;
-    card.dataset.id = s.id;
-    card.innerHTML = `
-      <div class="card-top">
-        <div>
-          <span class="code">Nº ${s.id}</span><br>
-          <span class="city-tag">${s.city}</span>
-        </div>
-        <div class="stamp">${s.turno.replace(' / ', '<br>')}</div>
-      </div>
-      <hr class="rule">
-      <div class="name">${s.name}</div>
-      <div class="address">${s.address}</div>
-      <div class="meta">
-        <div class="row"><b>${s.role}:</b> ${s.director}</div>
-        <div class="row">${s.staff}</div>
-        <div class="row">✆ ${s.phone} &nbsp;·&nbsp; ✉ ${s.email}</div>
-      </div>
-      <div class="modalidad">${s.modalidad}</div>
-      <div class="card-actions">
-        <button class="btn" data-action="map">Ver en el mapa ↦</button>
-        <a class="btn" target="_blank" rel="noopener"
-           href="https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}">Cómo llegar ↗</a>
-      </div>
-    `;
-    card.querySelector('[data-action="map"]').addEventListener('click', (e)=>{
-      e.stopPropagation();
-      selectSchool(s.id, true);
+  if(currentSection === 'escuelas'){
+    schools.forEach(s=>{
+      if(currentEscuelasFilter === 'Todas' || s.city === currentEscuelasFilter){
+        markers[s.id].forEach(m => map.addLayer(m));
+      }
     });
-    card.addEventListener('click', ()=> selectSchool(s.id, true));
-    listEl.appendChild(card);
-  });
+  } else {
+    annexes.forEach(a=>{
+      if(currentAnexasCat === 'all' || a.type === currentAnexasCat){
+        if(a.type === 'caps' && a.items){
+          a.items.forEach(c=>{
+            if(markers[c.id]) markers[c.id].forEach(m => map.addLayer(m));
+          });
+        } else if(markers[a.id]){
+          markers[a.id].forEach(m => map.addLayer(m));
+        }
+      }
+    });
+  }
 }
 
-function selectSchool(id, scrollMap){
-  selectedId = id;
-  const s = schools.find(x=>x.id===id);
+function render(){
+  updateMarkersVisibility();
+  const term = currentSearch.trim().toLowerCase();
+  listEl.innerHTML = '';
 
-  // reset all icons
-  schools.forEach(sc=>{
-    markers[sc.id].setIcon(makeIcon(sc.city, sc.id===id));
-  });
+  if(currentSection === 'escuelas'){
+    const visible = schools.filter(s=>{
+      const cityOk = currentEscuelasFilter==='Todas' || s.city===currentEscuelasFilter;
+      const searchOk = !term || s.name.toLowerCase().includes(term) || s.id.includes(term);
+      return cityOk && searchOk;
+    });
+
+    if(visible.length===0){
+      listEl.innerHTML = '<div class="empty">No hay escuelas que coincidan con la búsqueda.</div>';
+      return;
+    }
+
+    visible.forEach(s=>{
+      const card = document.createElement('div');
+      card.className = 'card' + (s.id===selectedId ? ' selected' : '');
+      card.dataset.city = s.city;
+      card.dataset.id = s.id;
+      card.dataset.type = 'escuela';
+      card.innerHTML = `
+        <div class="card-top">
+          <div>
+            <span class="code">Nº ${s.id}</span><br>
+            <span class="city-tag">${s.city}</span>
+          </div>
+          <div class="stamp">${s.turno.replace(' / ', '<br>')}</div>
+        </div>
+        <hr class="rule">
+        <div class="name">${s.name}</div>
+        <div class="address">${s.address}</div>
+        <div class="meta">
+          <div class="row"><b>${s.role}:</b> ${s.director}</div>
+          <div class="row">${s.staff}</div>
+          <div class="row">✆ ${s.phone} &nbsp;·&nbsp; ✉ ${s.email}</div>
+        </div>
+        <div class="modalidad">${s.modalidad}</div>
+        <div class="card-actions">
+          <button class="btn" data-action="map">Ver en el mapa ↦</button>
+          <a class="btn" target="_blank" rel="noopener"
+             href="https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}">Cómo llegar ↗</a>
+        </div>
+      `;
+      card.querySelector('[data-action="map"]').addEventListener('click', (e)=>{
+        e.stopPropagation();
+        selectItem(s.id, 'escuelas', true);
+      });
+      card.addEventListener('click', ()=> selectItem(s.id, 'escuelas', true));
+      listEl.appendChild(card);
+    });
+
+  } else {
+    // INSTITUCIONES ANEXAS
+    const visible = annexes.filter(a=>{
+      const catOk = currentAnexasCat==='all' || a.type===currentAnexasCat;
+      const searchOk = !term || a.name.toLowerCase().includes(term) || a.id.toLowerCase().includes(term) || 
+                       (a.items && a.items.some(it => it.name.toLowerCase().includes(term)));
+      return catOk && searchOk;
+    });
+
+    if(visible.length===0){
+      listEl.innerHTML = '<div class="empty">No hay instituciones anexas que coincidan con la búsqueda.</div>';
+      return;
+    }
+
+    if(currentAnexasCat === 'caps'){
+      const note = document.createElement('div');
+      note.className = 'panel-note';
+      note.innerHTML = '<b>Centros de Atención Primaria (CAPS):</b> Seleccioná cualquier centro o posta sanitaria para geolocalizarlo en el mapa.';
+      listEl.appendChild(note);
+    }
+
+    visible.forEach(a=>{
+      const card = document.createElement('div');
+      card.className = 'card' + (a.id===selectedId ? ' selected' : '');
+      card.dataset.type = a.type;
+      card.dataset.id = a.id;
+
+      let inner = `
+        <div class="card-top">
+          <span class="code">${a.id}</span>
+          <span class="tag">${a.type.toUpperCase()}</span>
+        </div>
+        <div class="name">${a.name}</div>
+      `;
+
+      if(a.email || a.phone){
+        inner += `<div class="meta"><div class="row">${a.phone ? '✆ '+a.phone : ''} ${a.email ? '✉ '+a.email : ''}</div></div>`;
+      }
+
+      if(a.type === 'caps' && a.items){
+        inner += `<div class="caps-list">`;
+        a.items.forEach(it=>{
+          const isSelected = selectedId === it.id ? ' active' : '';
+          inner += `<button class="caps-item-btn${isSelected}" data-id="${it.id}" data-lat="${it.lat}" data-lng="${it.lng}">${it.name}</button>`;
+        });
+        inner += `</div>`;
+      } else if(a.aulas){
+        inner += `<ul class="aulas">`;
+        a.aulas.forEach((aula)=>{
+          inner += `
+            <li>
+              <span class="aula-addr">● ${aula.name} — ${aula.addr}</span>
+              <span class="aula-meta">
+                <span>⏰ ${aula.time}</span>
+                ${aula.lat ? `<button class="aula-btn" data-lat="${aula.lat}" data-lng="${aula.lng}">Ver Aula ↦</button>` : ''}
+              </span>
+            </li>
+          `;
+        });
+        inner += `</ul>`;
+      }
+
+      card.innerHTML = inner;
+
+      // Event Listeners para los botones CAPS interactivos
+      card.querySelectorAll('.caps-item-btn').forEach(btn=>{
+        btn.addEventListener('click', (e)=>{
+          e.stopPropagation();
+          const capId = btn.dataset.id;
+          const lat = parseFloat(btn.dataset.lat);
+          const lng = parseFloat(btn.dataset.lng);
+          selectCapsItem(capId, lat, lng, true);
+        });
+      });
+
+      // Event Listeners para las aulas de CENS/CEBJA
+      card.querySelectorAll('.aula-btn').forEach(btn=>{
+        btn.addEventListener('click', (e)=>{
+          e.stopPropagation();
+          const lat = parseFloat(btn.dataset.lat);
+          const lng = parseFloat(btn.dataset.lng);
+          map.flyTo([lat, lng], 15, { duration:.6 });
+        });
+      });
+
+      card.addEventListener('click', ()=> selectItem(a.id, 'anexas', true));
+      listEl.appendChild(card);
+    });
+  }
+}
+
+function selectCapsItem(capId, lat, lng, scrollMap){
+  selectedId = capId;
+  render();
+  if(lat && lng){
+    map.flyTo([lat, lng], 15, { duration:.6 });
+    if(markers[capId] && markers[capId][0]){
+      setTimeout(()=> markers[capId][0].openPopup(), 350);
+    }
+  }
+  if(scrollMap && window.innerWidth <= 880){
+    document.getElementById('map').scrollIntoView({behavior:'smooth', block:'center'});
+  }
+}
+
+function selectItem(id, section, scrollMap){
+  selectedId = id;
+
+  if(section === 'escuelas'){
+    const s = schools.find(x=>x.id===id);
+    if(s && scrollMap){
+      map.flyTo([s.lat, s.lng], 15, { duration:.6 });
+      if(markers[id] && markers[id][0]) setTimeout(()=> markers[id][0].openPopup(), 350);
+    }
+  } else {
+    const a = annexes.find(x=>x.id===id);
+    if(a && a.aulas && a.aulas[0] && scrollMap){
+      const firstAula = a.aulas[0];
+      if(firstAula.lat && firstAula.lng){
+        map.flyTo([firstAula.lat, firstAula.lng], 14, { duration:.6 });
+        if(markers[id] && markers[id][0]) setTimeout(()=> markers[id][0].openPopup(), 350);
+      }
+    }
+  }
 
   render();
 
-  if(scrollMap){
-    map.flyTo([s.lat, s.lng], 15, { duration:.6 });
-    setTimeout(()=> markers[id].openPopup(), 350);
-    if(window.innerWidth <= 880){
-      document.getElementById('map').scrollIntoView({behavior:'smooth', block:'center'});
-    }
-  } else {
-    markers[id].openPopup();
+  if(scrollMap && window.innerWidth <= 880){
+    document.getElementById('map').scrollIntoView({behavior:'smooth', block:'center'});
   }
 }
 
-document.querySelectorAll('.chip').forEach(chip=>{
-  chip.addEventListener('click', ()=>{
-    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
-    chip.classList.add('active');
-    currentFilter = chip.dataset.filter;
+// HANDLERS PESTAÑAS PRINCIPALES
+document.querySelectorAll('.section-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.section-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentSection = btn.dataset.section;
+
+    // Toggle barra de filtros Nivel 2
+    document.getElementById('controls-escuelas').style.display = currentSection === 'escuelas' ? 'flex' : 'none';
+    document.getElementById('controls-anexas').style.display = currentSection === 'anexas' ? 'flex' : 'none';
+
+    selectedId = null;
     render();
   });
 });
 
+// HANDLERS FILTROS ESCUELAS (NIVEL 2)
+document.querySelectorAll('#controls-escuelas .chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    document.querySelectorAll('#controls-escuelas .chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    currentEscuelasFilter = chip.dataset.filter;
+    render();
+  });
+});
+
+// HANDLERS FILTROS ANEXAS (NIVEL 2)
+document.querySelectorAll('#controls-anexas .chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    document.querySelectorAll('#controls-anexas .chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    currentAnexasCat = chip.dataset.cat;
+    render();
+  });
+});
+
+// SEARCH INPUT HANDLER
 document.getElementById('search').addEventListener('input', (e)=>{
   currentSearch = e.target.value;
   render();
